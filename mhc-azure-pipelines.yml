@@ -1,0 +1,61 @@
+
+
+trigger:
+  branches:
+      include:
+      - dev/*
+      - qa
+      - master
+stages:
+- stage: Publish
+  displayName: Publish Terrform Manifests
+  jobs:
+    - job: Publish
+      continueOnError: false
+      steps:
+      - task: PublishBuildArtifacts@1
+        displayName: Publish_Terraform_Manifests
+        inputs:
+          PathtoPublish: '$(Build.ArtifactStagingDirectory/Terraform/dev)'
+          ArtifactName: 'Terrform-Manifests'
+          publishLocation: 'Container'
+
+- stage: 'Dev'
+  displayName: 'Deploy to the dev environment'
+    #dependsOn: Publish
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/dev/*'))
+  jobs:
+    - job: Provision
+      displayName: 'Provision MHC AKS Dev Environment'
+      pool:
+        vmImage: 'ubuntu-16.04'
+      variables:
+      - group: Terraform
+      steps:
+      - script: |
+          # Exit when any command returns a failure status.
+          set -e
+          # Write terraform.tfvars.
+          echo 'resource_group_location = "'$(ResourceGroupLocation)'"' | tee terraform.tfvars
+          # Write backend.tfvars.
+          echo 'resource_group_name = "TFStateFile-rg"' | tee backend.tfvars
+          echo 'storage_account_name = "'$(StorageAccountName)'"' | tee -a backend.tfvars
+          echo 'container_name = "tfstatefiles"' | tee -a backend.tfvars
+          echo 'key = "dev-terraform.tfstate"' | tee -a backend.tfvars
+          # Initialize Terraform.
+          terraform init -input=false -backend-config="backend.tfvars"
+          echo "*********** Create or select workspace"
+          terraform workspace select "$(Env1)" || terraform workspace new "$(Env1)"
+          #Run terraform plan
+          terraform plan -out dev.tfplan
+          # Apply the Terraform plan.
+          terraform apply dev.tfplan
+  
+        name: 'RunTerraform'
+        displayName: 'Run Terraform'
+        env:
+          ARM_CLIENT_ID: $(ARM_CLIENT_ID)
+          ARM_CLIENT_SECRET: $(ARM_CLIENT_SECRET)
+          ARM_TENANT_ID: $(ARM_TENANT_ID)
+          ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)  
+
