@@ -14,17 +14,12 @@ stages:
     - job: Publish
       continueOnError: false
       steps:
-      - task: CopyFiles@2
+      - task: PublishPipelineArtifact@1
         displayName: Copy Terrform Manifests
         inputs:
-          SourceFolder: '$(System.DefaultWorkingDirectory)/Terraform/dev'
-          Contents: '**'
-          TargetFolder: '$(Build.ArtifactStagingDirectory)'
-      - task: PublishBuildArtifacts@1
-        inputs:
-          pathToPublish: $(Build.ArtifactStagingDirectory)
-          artifactName: Terrform-Manifests
-
+          targetPath: '$(System.DefaultWorkingDirectory)/Terraform/dev'
+          artifact: 'terraform-manifests'
+          publishLocation: 'pipeline'
 - stage: 'Dev'
   displayName: 'Deploy to the dev environment'
   dependsOn: Publish
@@ -56,7 +51,7 @@ stages:
           terraform plan -out dev.tfplan
           # Apply the Terraform plan.
           terraform apply dev.tfplan
-        workingDirectory: $(Build.ArtifactStagingDirectory)
+        workingDirectory: '$(System.DefaultWorkingDirectory)/Terraform/dev'
         name: 'RunTerraform'
         displayName: 'Run Terraform'
         env:
