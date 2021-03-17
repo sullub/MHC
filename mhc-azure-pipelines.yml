@@ -14,12 +14,12 @@ stages:
     - job: Publish
       continueOnError: false
       steps:
-      - task: PublishBuildArtifacts@1
-        displayName: Publish_Terraform_Manifests
+      - task: CopyFiles@2
+        displayName: Copy Terrform Manifests
         inputs:
-          PathtoPublish: '$(Build.ArtifactStagingDirectory)/Terraform/dev'
-          ArtifactName: 'Terrform-Manifests'
-          publishLocation: 'Container'
+          SourceFolder: '$(System.DefaultWorkingDirectory)/Terraform/dev'
+          Contents: '**'
+          TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
 - stage: 'Dev'
   displayName: 'Deploy to the dev environment'
@@ -32,6 +32,7 @@ stages:
         vmImage: 'ubuntu-16.04'
       variables:
       - group: Terraform
+      
       steps:
       - script: |
           # Exit when any command returns a failure status.
