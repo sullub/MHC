@@ -15,3 +15,8 @@
 /src/MyHealth.Helpers/obj
 /test/MyHealth.API.IntegrationTests/obj
 /test/MyHealth.API.IntegrationTests/bin/Debug/netcoreapp1.0
+commands.txt
+backend.tf
+.terraform
+plan-dev
+.terraform.lock.hcl
