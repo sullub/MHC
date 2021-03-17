@@ -56,7 +56,7 @@ stages:
           terraform plan -out dev.tfplan
           # Apply the Terraform plan.
           terraform apply dev.tfplan
-  
+        workingDirectory: $(Build.ArtifactStagingDirectory)
         name: 'RunTerraform'
         displayName: 'Run Terraform'
         env:
