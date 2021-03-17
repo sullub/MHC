@@ -18,11 +18,6 @@ stages:
         displayName: Publish_Terraform_Manifests
         inputs:
           PathtoPublish: '$(Build.ArtifactStagingDirectory)/Terraform/dev'
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: '$(System.DefaultWorkingDirectory)/Terraform/dev'
-    ArtifactName: 'Terrform-Manifests'
-    publishLocation: 'Container'
           ArtifactName: 'Terrform-Manifests'
           publishLocation: 'Container'
 
