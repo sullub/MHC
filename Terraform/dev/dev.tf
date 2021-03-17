@@ -1,4 +1,8 @@
 
+terraform {
+  backend "azurerm" {
+  }
+}
 variable "resource_group_name" {
   default = "mhc-rg"
   description = "The name of the resource group"
