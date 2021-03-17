@@ -3,7 +3,7 @@
 trigger:
   branches:
       include:
-      - dev/*
+      - dev
       - qa
       - master
 
@@ -24,7 +24,7 @@ stages:
 - stage: 'Dev'
   displayName: 'Deploy to the dev environment'
   dependsOn: Publish
-  condition: eq(variables['Build.SourceBranch'], 'refs/heads/dev/')
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/dev')
   jobs:
     - job: Provision
       displayName: 'Provision MHC AKS Dev Environment'
