@@ -23,7 +23,7 @@ stages:
 
 - stage: 'Dev'
   displayName: 'Deploy to the dev environment'
-  dependsOn: Publish
+  #dependsOn: Publish
   condition: eq(variables['Build.SourceBranch'], 'refs/heads/dev/')
   jobs:
     - job: Provision
