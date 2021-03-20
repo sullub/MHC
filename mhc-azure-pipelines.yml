@@ -59,7 +59,7 @@ stages:
               terraform plan -var ssh_public_key=$(sshkey.secureFilePath) -out dev.tfplan
               # Apply the Terraform plan.
               terraform apply dev.tfplan
-            workingDirectory: '$(System.DefaultWorkingDirectory)/Terraform/dev'
+            workingDirectory: '$(Pipeline.Workspace)/Terraform/dev'
             name: 'RunTerraform'
             displayName: 'Run Terraform'
             env:
