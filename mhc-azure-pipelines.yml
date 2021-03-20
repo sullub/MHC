@@ -31,40 +31,40 @@ stages:
       displayName: 'Provision MHC AKS Dev Infrastructure Environment'
       pool:
         vmImage: 'ubuntu-16.04'
-        environment: $(Env1)
-        strategy:
-        runonce:
-        deploy:
-        steps:
-        - task: DownloadSecureFile@1
-          displayName: Download SSH Key
-          name: sshkey
-          inputs:
-          secureFile: 'ask-akssshkey2.pub'
-        - script: |
-            # Exit when any command returns a failure status.
-            set -e
-            # Write terraform.tfvars.
-            echo 'resource_group_location = "'$(ResourceGroupLocation)'"' | tee terraform.tfvars
-            # Write backend.tfvars.
-            echo 'resource_group_name = "TFStateFile-rg"' | tee backend.tfvars
-            echo 'storage_account_name = "'$(StorageAccountName)'"' | tee -a backend.tfvars
-            echo 'container_name = "tfstatefiles"' | tee -a backend.tfvars
-            echo 'key = "dev-terraform.tfstate"' | tee -a backend.tfvars
-            # Initialize Terraform.
-            terraform init -input=false -backend-config="backend.tfvars"
-            echo "*********** Create or select workspace"
-            terraform workspace select "$(Env1)" || terraform workspace new "$(Env1)"
-            #Run terraform plan
-            terraform plan -var ssh_public_key=$(sshkey.secureFilePath) -out dev.tfplan
-            # Apply the Terraform plan.
-            terraform apply dev.tfplan
-          workingDirectory: '$(System.DefaultWorkingDirectory)/Terraform/dev'
-          name: 'RunTerraform'
-          displayName: 'Run Terraform'
-          env:
-            ARM_CLIENT_ID: $(ARM_CLIENT_ID)
-            ARM_CLIENT_SECRET: $(ARM_CLIENT_SECRET)
-            ARM_TENANT_ID: $(ARM_TENANT_ID)
-            ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)  
+      environment: $(Env1)
+      strategy:
+        runOnce:
+         deploy:
+          steps:
+          - task: DownloadSecureFile@1
+            displayName: Download SSH Key
+            name: sshkey
+            inputs:
+              secureFile: 'ask-akssshkey2.pub'
+          - script: |
+              # Exit when any command returns a failure status.
+              set -e
+              # Write terraform.tfvars.
+              echo 'resource_group_location = "'$(ResourceGroupLocation)'"' | tee terraform.tfvars
+              # Write backend.tfvars.
+              echo 'resource_group_name = "TFStateFile-rg"' | tee backend.tfvars
+              echo 'storage_account_name = "'$(StorageAccountName)'"' | tee -a backend.tfvars
+              echo 'container_name = "tfstatefiles"' | tee -a backend.tfvars
+              echo 'key = "dev-terraform.tfstate"' | tee -a backend.tfvars
+              # Initialize Terraform.
+              terraform init -input=false -backend-config="backend.tfvars"
+              echo "*********** Create or select workspace"
+              terraform workspace select "$(Env1)" || terraform workspace new "$(Env1)"
+              #Run terraform plan
+              terraform plan -var ssh_public_key=$(sshkey.secureFilePath) -out dev.tfplan
+              # Apply the Terraform plan.
+              terraform apply dev.tfplan
+            workingDirectory: '$(System.DefaultWorkingDirectory)/Terraform/dev'
+            name: 'RunTerraform'
+            displayName: 'Run Terraform'
+            env:
+              ARM_CLIENT_ID: $(ARM_CLIENT_ID)
+              ARM_CLIENT_SECRET: $(ARM_CLIENT_SECRET)
+              ARM_TENANT_ID: $(ARM_TENANT_ID)
+              ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)  
 
