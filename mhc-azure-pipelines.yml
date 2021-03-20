@@ -31,7 +31,7 @@ stages:
       displayName: 'Provision MHC AKS Dev Infrastructure Environment'
       pool:
         vmImage: 'ubuntu-16.04'
-      environment: $(Env1)
+      environment: "$(Env1)"
       strategy:
         runOnce:
          deploy:
