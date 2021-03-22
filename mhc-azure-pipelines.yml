@@ -3,7 +3,7 @@
 trigger:
   branches:
       include:
-      - dev/*
+      - dev
       - qa
       - master
 
@@ -31,7 +31,7 @@ stages:
       displayName: 'Provision MHC AKS Dev Infrastructure Environment'
       pool:
         vmImage: 'ubuntu-16.04'
-      environment: "$(Env1)"
+      environment: dev
       strategy:
         runOnce:
          deploy:
@@ -59,7 +59,7 @@ stages:
               terraform plan -var ssh_public_key=$(sshkey.secureFilePath) -out dev.tfplan
               # Apply the Terraform plan.
               terraform apply dev.tfplan
-            workingDirectory: '$(System.DefaultWorkingDirectory)/Terraform/dev'
+            workingDirectory: '$(Pipeline.Workspace)/terraform-manifests'
             name: 'RunTerraform'
             displayName: 'Run Terraform'
             env:
