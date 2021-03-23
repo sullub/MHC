@@ -9,7 +9,7 @@ trigger:
       - build-docker-image
 
 stages:
-- stage: Publish
+- stage: Dev
   displayName: Publish Terraform Manifests
   jobs:
     - job: Publish
@@ -21,13 +21,6 @@ stages:
           targetPath: '$(System.DefaultWorkingDirectory)/Terraform/dev'
           artifact: 'terraform-manifests'
           publishLocation: 'pipeline'
-- stage: 'Dev'
-  displayName: 'Deploy to the dev environment'
-  dependsOn: Publish
-  #condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
-  variables:
-      - group: Terraform
-  jobs:
     - deployment: Provision
       displayName: 'Provision MHC AKS Dev Infrastructure Environment'
       pool:
@@ -68,14 +61,6 @@ stages:
               ARM_CLIENT_SECRET: $(ARM_CLIENT_SECRET)
               ARM_TENANT_ID: $(ARM_TENANT_ID)
               ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)  
-
-- stage: BuildAdsPushDockerImage
-  displayName: Build/Push_Docker_Image
-  dependsOn: Dev
-  #condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
-  variables:
-      - group: Terraform
-  jobs:
     - job: Build
       continueOnError: false
       steps:
@@ -145,16 +130,11 @@ stages:
         inputs:
           PathtoPublish: '$(Build.ArtifactStagingDirectory)'
           ArtifactName: 'deploy'
-          publishLocation: 'Container'
-- stage: DeployAppsToAKS
-  displayName: DeployAppsToAKS
-  dependsOn: BuildAdsPushDockerImage
-  #condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
-  variables:
-      - group: Terraform
-  jobs:
+          publishLocation: 'Container'          
+
     - deployment: DeployDacPac
       displayName: 'DeployDacPac'
+      dependsOn: Build
       pool:
         vmImage: 'windows-2019'
       environment: dev
@@ -177,7 +157,6 @@ stages:
               DeploymentAction: 'Publish'
               DacpacFile: '$(Pipeline.Workspace)/deploy/myhealthclinic.dacpac'
               IpDetectionMethod: 'AutoDetect'
-
     - deployment: DeployAppsToAKS
       displayName: 'DeployAppsToAKS'
       dependsOn: DeployDacPac
