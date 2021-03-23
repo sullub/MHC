@@ -196,6 +196,6 @@ stages:
                 action: 'deploy'
                 kubernetesServiceConnection: 'MHC_AKS'
                 namespace: 'default'
-                manifests: '$(Pipeline.Workspace)/Manifests/mhc-aks.yaml'
+                manifests: '$(Pipeline.Workspace)/deploy/Manifests/mhc-aks.yaml'
                 containers: '$(ACR)/myhealth.web:$(Build.BuildId)'
                 imagePullSecrets: 'acrsecret'
