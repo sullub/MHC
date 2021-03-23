@@ -200,11 +200,3 @@ stages:
                 azureContainerRegistry: '$(ACR)'
                 secretName: 'acrsecret'
                 workingDirectory: '$(Pipeline.Workspace)/deploy'
-
-         - task: CopyFiles@2
-           inputs:
-             SourceFolder: 'dasd'
-             Contents: |
-               **ds
-               fg
-             TargetFolder: 'z\x'
