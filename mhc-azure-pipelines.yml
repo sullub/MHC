@@ -70,7 +70,7 @@ stages:
 
 - stage: BuildAdsPushDockerImage
   displayName: Build/Push_Docker_Image
-  dependsOn: Provision
+  dependsOn: Dev
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
   variables:
       - group: Terraform
@@ -145,7 +145,7 @@ stages:
           ArtifactName: deploy
 - stage: DeployAppsToAKS
   displayName: DeployAppsToAKS
-  dependsOn: BBuildAdsPushDockerImage
+  dependsOn: BuildAdsPushDockerImage
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
   variables:
       - group: Terraform
