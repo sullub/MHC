@@ -31,7 +31,7 @@ stages:
       displayName: 'Provision MHC AKS Dev Infrastructure Environment'
       pool:
         vmImage: 'ubuntu-16.04'
-      environment: dev.provisioninfrastracture
+      environment: dev
       strategy:
         runOnce:
          deploy:
@@ -68,7 +68,7 @@ stages:
               ARM_TENANT_ID: $(ARM_TENANT_ID)
               ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)  
 
-- stage: Build/Push_Docker_Image
+- stage: BuildAdsPushDockerImage
   displayName: Build/Push_Docker_Image
   dependsOn: Provision
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
@@ -145,7 +145,7 @@ stages:
           ArtifactName: deploy
 - stage: DeployAppsToAKS
   displayName: DeployAppsToAKS
-  dependsOn: Build/Push_Docker_Image
+  dependsOn: BBuildAdsPushDockerImage
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
   variables:
       - group: Terraform
@@ -154,7 +154,7 @@ stages:
       displayName: 'DeployAppsToAKS'
       pool:
         vmImage: 'ubuntu-16.04'
-      environment: dev.deployApps
+      environment: dev
       strategy:
         runOnce:
          deploy:
