@@ -9,13 +9,13 @@ trigger:
 
 stages:
 - stage: Publish
-  displayName: Publish Terrform Manifests
+  displayName: Publish Terraform Manifests
   jobs:
     - job: Publish
       continueOnError: false
       steps:
       - task: PublishPipelineArtifact@1
-        displayName: Copy Terrform Manifests
+        displayName: Copy Terraform Manifests
         inputs:
           targetPath: '$(System.DefaultWorkingDirectory)/Terraform/dev'
           artifact: 'terraform-manifests'
@@ -31,7 +31,7 @@ stages:
       displayName: 'Provision MHC AKS Dev Infrastructure Environment'
       pool:
         vmImage: 'ubuntu-16.04'
-      environment: dev
+      environment: dev.provisioninfrastracture
       strategy:
         runOnce:
          deploy:
@@ -68,3 +68,122 @@ stages:
               ARM_TENANT_ID: $(ARM_TENANT_ID)
               ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)  
 
+- stage: Build/Push_Docker_Image
+  displayName: Build/Push_Docker_Image
+  dependsOn: Provision
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
+  variables:
+      - group: Terraform
+  jobs:
+    - job: Build
+      continueOnError: false
+      steps:
+      - task: replacetokens@3
+        displayName: 'Replace tokens in appsettings.json'
+        inputs:
+          rootDirectory: '''$(System.DefaultWorkingDirectory)/src/MyHealth.Web'''
+          targetFiles: 'appsettings.json'
+          escapeType: none
+          tokenPrefix: '__'
+          tokenSuffix: '__'
+      - task: replacetokens@3
+        displayName: 'Replace tokens in mhc-aks.yaml'
+        inputs:
+          rootDirectory: '''$(System.DefaultWorkingDirectory)/src/MyHealth.Web'''
+          targetFiles: 'mhc-aks.yaml'
+          escapeType: none
+          tokenPrefix: '__'
+          tokenSuffix: '__'
+
+      - task: DockerCompose@0
+        displayName: 'Run services'
+        inputs:
+          dockerComposeFile: 'docker-compose.ci.build.yml'
+          action: 'Run services'
+          detached: false
+
+      - task: DockerCompose@0
+        displayName: 'Build services'
+        inputs:
+          dockerComposeFile: 'docker-compose.yml'
+          dockerComposeFileArgs: 'DOCKER_BUILD_SOURCE='
+          action: 'Build services'
+          additionalImageTags: '$(Build.BuildId)'
+          containerregistrytype: Azure Container Registry
+          azureContainerRegistry: '$(ACR)'
+          azureSubscriptionEndpoint: 'MHC_terraform Lab'
+
+      - task: DockerCompose@0
+        displayName: 'Push services'
+        inputs:
+          dockerComposeFile: 'docker-compose.yml'
+          dockerComposeFileArgs: 'DOCKER_BUILD_SOURCE='
+          action: 'Push services'
+          additionalImageTags: '$(Build.BuildId)'
+          containerregistrytype: Azure Container Registry
+          azureContainerRegistry: '$(ACR)'
+          azureSubscriptionEndpoint: 'MHC_terraform Lab'
+
+      - task: DockerCompose@0
+        displayName: 'Lock services'
+        inputs:
+          dockerComposeFile: 'docker-compose.yml'
+          dockerComposeFileArgs: 'DOCKER_BUILD_SOURCE='
+          action: 'Lock services'
+          containerregistrytype: Azure Container Registry
+          azureContainerRegistry: '$(ACR)'
+          azureSubscriptionEndpoint: 'MHC_terraform Lab'
+      - task: CopyFiles@2
+        inputs:
+          Contents: |
+            **/Manifests/mhc-aks.yaml
+            **/*.dacpac
+          TargetFolder: '$(System.DefaultWorkingDirectory)'
+      - task: PublishBuildArtifacts@1
+        displayName: 'Publish Artifact'
+        inputs:
+          ArtifactName: deploy
+- stage: DeployAppsToAKS
+  displayName: DeployAppsToAKS
+  dependsOn: Build/Push_Docker_Image
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
+  variables:
+      - group: Terraform
+  jobs:
+    - deployment: DeployAppsToAKS
+      displayName: 'DeployAppsToAKS'
+      pool:
+        vmImage: 'ubuntu-16.04'
+      environment: dev.deployApps
+      strategy:
+        runOnce:
+         deploy:
+          steps:
+          - download: current
+            artifact: deploy
+          - task: SqlAzureDacpacDeployment@1
+            displayName: Execute Azure SQL DacpacTask
+            inputs:
+              azureSubscription: 'MHC_terraform Lab'
+              ServerName: '<Database server name>'
+              DatabaseName: '<Database name>'
+              SqlUsername: '<SQL user name>'
+              SqlPassword: '<SQL user password>'
+              deployType: 'DacpacTask'
+              DacpacFile: '$(Pipeline.Workspace)/deploy/myhealthclinic.dacpac'
+          - task: Kubernetes@1
+            displayName: kubectl apply for secretType dockerRegistry
+            inputs:
+              azureSubscriptionEndpoint: 'MHC_terraform Lab'
+              azureResourceGroup: ask-dev-mhc-rg-cluster01
+              kubernetesCluster: ask-dev-mhc-rg-cluster01
+              command: apply
+              arguments: -f mhc-aks.yaml
+              secretType: dockerRegistry
+              containerRegistryType: Azure Container Registry
+              azureSubscriptionEndpointForSecrets: 'MHC_terraform Lab'
+              azureContainerRegistry: $(ACR)
+              secretName: acrsecret
+              forceUpdate: true
+
+         
