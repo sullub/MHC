@@ -190,18 +190,12 @@ stages:
             steps:
             - download: current
               artifact: deploy
-            - task: Kubernetes@1
-              displayName: kubectl apply for secretType dockerRegistry
+            - task: KubernetesManifest@0
+              displayName: Deploy to Kubernetes cluster
               inputs:
-                connectionType: 'Azure Resource Manager'
-                azureSubscriptionEndpoint: 'MHC_terraform Lab'
-                azureResourceGroup: 'ask-dev-mhc-rg'
-                kubernetesCluster: 'ask-dev-mhc-rg-cluster01'
-                command: 'apply'
-                arguments: '-f $(Pipeline.Workspace)/deploy/Manifests'
-                secretType: 'dockerRegistry'
-                containerRegistryType: 'Azure Container Registry'
-                azureSubscriptionEndpointForSecrets: 'MHC_terraform Lab'
-                azureContainerRegistry: '$(ACR)'
-                secretName: 'acrsecret'
-                workingDirectory: '$(Pipeline.Workspace)/deploy/Manifests'
+                action: 'deploy'
+                kubernetesServiceConnection: 'MHC_AKS'
+                namespace: 'default'
+                manifests: '$(Pipeline.Workspace)/Manifests/mhc-aks.yaml'
+                containers: '$(ACR)/myhealth.web:$(Build.BuildId)'
+                imagePullSecrets: 'acrsecret'
