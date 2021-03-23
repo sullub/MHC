@@ -168,14 +168,19 @@ stages:
             displayName: Execute Azure SQL DacpacTask
             inputs:
               azureSubscription: 'MHC_terraform Lab'
+              AuthenticationType: 'server'
               ServerName: '$(SQLserver)'
+              DatabaseName: 'mhcdb'
               SqlUsername: '$(SQLuser)'
               SqlPassword: '$(SQLPassword)'
               deployType: 'DacpacTask'
+              DeploymentAction: 'Publish'
               DacpacFile: '$(Pipeline.Workspace)/deploy/myhealthclinic.dacpac'
+              IpDetectionMethod: 'AutoDetect'
 
     - deployment: DeployAppsToAKS
       displayName: 'DeployAppsToAKS'
+      dependsOn: DeployDacPac
       pool:
         vmImage: 'ubuntu-16.04'
       environment: dev
@@ -193,7 +198,7 @@ stages:
                 azureResourceGroup: 'ask-dev-mhc-rg'
                 kubernetesCluster: 'ask-dev-mhc-rg-cluster01'
                 command: 'apply'
-                arguments: '-f mhc-aks.yaml'
+                arguments: '-f $(Pipeline.Workspace)/deploy/mhc-aks.yaml'
                 secretType: 'dockerRegistry'
                 containerRegistryType: 'Azure Container Registry'
                 azureSubscriptionEndpointForSecrets: 'MHC_terraform Lab'
