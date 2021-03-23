@@ -151,10 +151,10 @@ stages:
   variables:
       - group: Terraform
   jobs:
-    - deployment: DeployAppsToAKS
-      displayName: 'DeployAppsToAKS'
+    - deployment: DeployDacPac
+      displayName: 'DeployDacPac'
       pool:
-        vmImage: 'ubuntu-16.04'
+        vmImage: 'windows-2019'
       environment: dev
       strategy:
         runOnce:
@@ -171,6 +171,18 @@ stages:
               SqlPassword: '$(SQLPassword)'
               deployType: 'DacpacTask'
               DacpacFile: '$(Pipeline.Workspace)/deploy/myhealthclinic.dacpac'
+
+    - deployment: DeployAppsToAKS
+      displayName: 'DeployAppsToAKS'
+      pool:
+        vmImage: 'ubuntu-16.04'
+      environment: dev
+      strategy:
+        runOnce:
+        deploy:
+          steps:
+          - download: current
+            artifact: deploy
           - task: Kubernetes@1
             displayName: kubectl apply for secretType dockerRegistry
             inputs:
