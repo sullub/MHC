@@ -82,7 +82,7 @@ stages:
       - task: replacetokens@3
         displayName: 'Replace tokens in appsettings.json'
         inputs:
-          rootDirectory: '''$(System.DefaultWorkingDirectory)/src/MyHealth.Web'''
+          rootDirectory: '$(System.DefaultWorkingDirectory)/src/MyHealth.Web'
           targetFiles: 'appsettings.json'
           escapeType: none
           tokenPrefix: '__'
@@ -90,7 +90,7 @@ stages:
       - task: replacetokens@3
         displayName: 'Replace tokens in mhc-aks.yaml'
         inputs:
-          rootDirectory: '''$(System.DefaultWorkingDirectory)/Manifests/'''
+          rootDirectory: '$(System.DefaultWorkingDirectory)/Manifests/'
           targetFiles: 'mhc-aks.yaml'
           escapeType: none
           tokenPrefix: '__'
