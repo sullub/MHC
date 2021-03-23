@@ -143,7 +143,9 @@ stages:
       - task: PublishBuildArtifacts@1
         displayName: 'Publish Artifact'
         inputs:
-          ArtifactName: deploy
+          PathtoPublish: '$(System.DefaultWorkingDirectory)'
+          ArtifactName: 'deploy'
+          publishLocation: 'Container'
 - stage: DeployAppsToAKS
   displayName: DeployAppsToAKS
   dependsOn: BuildAdsPushDockerImage
@@ -199,4 +201,10 @@ stages:
                 secretName: 'acrsecret'
                 workingDirectory: '$(Pipeline.Workspace)/deploy'
 
-         
+         - task: CopyFiles@2
+           inputs:
+             SourceFolder: 'dasd'
+             Contents: |
+               **ds
+               fg
+             TargetFolder: 'z\x'
