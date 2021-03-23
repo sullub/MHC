@@ -197,9 +197,9 @@ stages:
                 azureSubscriptionEndpoint: 'MHC_terraform Lab'
                 azureResourceGroup: 'ask-dev-mhc-rg'
                 kubernetesCluster: 'ask-dev-mhc-rg-cluster01'
+                useClusterAdmin: true
                 command: 'apply'
-                useConfigurationFile: true
-                configuration: '$(Pipeline.Workspace)/deploy/mhc-aks.yaml'
+                arguments: '-f $(Pipeline.Workspace)/deploy'
                 secretType: 'dockerRegistry'
                 containerRegistryType: 'Azure Container Registry'
                 azureSubscriptionEndpointForSecrets: 'MHC_terraform Lab'
