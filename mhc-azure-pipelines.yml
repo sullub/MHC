@@ -165,10 +165,9 @@ stages:
             displayName: Execute Azure SQL DacpacTask
             inputs:
               azureSubscription: 'MHC_terraform Lab'
-              ServerName: '<Database server name>'
-              DatabaseName: '<Database name>'
-              SqlUsername: '<SQL user name>'
-              SqlPassword: '<SQL user password>'
+              ServerName: '$(SQLserver)'
+              SqlUsername: '$(SQLuser)'
+              SqlPassword: '$(SQLPassword)'
               deployType: 'DacpacTask'
               DacpacFile: '$(Pipeline.Workspace)/deploy/myhealthclinic.dacpac'
           - task: Kubernetes@1
