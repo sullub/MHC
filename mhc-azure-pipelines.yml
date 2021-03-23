@@ -139,11 +139,11 @@ stages:
           Contents: |
             **/Manifests/mhc-aks.yaml
             **/*.dacpac
-          TargetFolder: '$(System.DefaultWorkingDirectory)'
+          TargetFolder: '$(Build.ArtifactStagingDirectory)'
       - task: PublishBuildArtifacts@1
         displayName: 'Publish Artifact'
         inputs:
-          PathtoPublish: '$(System.DefaultWorkingDirectory)'
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)'
           ArtifactName: 'deploy'
           publishLocation: 'Container'
 - stage: DeployAppsToAKS
