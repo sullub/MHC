@@ -6,6 +6,7 @@ trigger:
       - dev/*
       - qa
       - master
+      - build-docker-image
 
 stages:
 - stage: Publish
@@ -23,7 +24,7 @@ stages:
 - stage: 'Dev'
   displayName: 'Deploy to the dev environment'
   dependsOn: Publish
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
+  #condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
   variables:
       - group: Terraform
   jobs:
@@ -71,7 +72,7 @@ stages:
 - stage: BuildAdsPushDockerImage
   displayName: Build/Push_Docker_Image
   dependsOn: Dev
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
+  #condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
   variables:
       - group: Terraform
   jobs:
@@ -146,7 +147,7 @@ stages:
 - stage: DeployAppsToAKS
   displayName: DeployAppsToAKS
   dependsOn: BuildAdsPushDockerImage
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
+  #condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
   variables:
       - group: Terraform
   jobs:
