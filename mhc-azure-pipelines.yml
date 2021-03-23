@@ -185,5 +185,6 @@ stages:
               azureSubscriptionEndpointForSecrets: 'MHC_terraform Lab'
               azureContainerRegistry: '$(ACR)'
               secretName: 'acrsecret'
+              workingDirectory: '$(Pipeline.Workspace)/deploy'
 
          
