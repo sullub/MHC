@@ -11,6 +11,7 @@ trigger:
 stages:
 - stage: Dev
   displayName: Publish Terraform Manifests
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/build-docker-image'))
   jobs:
     - job: Publish
       continueOnError: false
@@ -23,6 +24,7 @@ stages:
           publishLocation: 'pipeline'
     - deployment: Provision
       displayName: 'Provision MHC AKS Dev Infrastructure Environment'
+      dependsOn: Publish
       pool:
         vmImage: 'ubuntu-16.04'
       environment: dev
@@ -63,6 +65,7 @@ stages:
               ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)  
     - job: Build
       continueOnError: false
+      dependsOn: Provision
       steps:
       - task: replacetokens@3
         displayName: 'Replace tokens in appsettings.json'
