@@ -54,10 +54,9 @@ resource "azurerm_resource_group" "mhc" {
 resource "azurerm_log_analytics_workspace" "insights" {
   name                = "${local.full_log_analy_name}-workspace01"
   location            = var.location
-  resource_group_name = local.full_rg_name
+  resource_group_name = azurerm_resource_group.mhc.name
   sku                 = "PerGB2018"
   retention_in_days   = 30
-  depends_on = [local.full_rg_name]
 
    tags = {
     environment = terraform.workspace
@@ -74,7 +73,7 @@ resource "azuread_group" "aks_administrators" {
 resource "azurerm_virtual_network" "aksvnet" {
   name                = "${local.full_rg_name}-aks-network"
   location            = var.location
-  resource_group_name = local.full_rg_name
+  resource_group_name = azurerm_resource_group.mhc.name
   address_space       = ["10.0.0.0/8"]
   tags = {
     environment = terraform.workspace
@@ -85,14 +84,14 @@ resource "azurerm_virtual_network" "aksvnet" {
 resource "azurerm_subnet" "aks-default" {
   name                 = "${local.full_rg_name}-aks-default-subnet"
   virtual_network_name = azurerm_virtual_network.aksvnet.name
-  resource_group_name  = local.full_rg_name
+  resource_group_name  = azurerm_resource_group.mhc.name
   address_prefixes       = ["10.240.0.0/24"]
 }
 # Provision AKS Cluster
 resource "azurerm_kubernetes_cluster" "aks_cluster" {
   name                = "${local.full_rg_name}-cluster01"
   location            = var.location
-  resource_group_name = local.full_rg_name
+  resource_group_name = azurerm_resource_group.mhc.name
   dns_prefix          = "${local.full_rg_name}-cluster01"
   kubernetes_version  = data.azurerm_kubernetes_service_versions.current.latest_version
   node_resource_group = "${local.full_rg_name}-nrg"
@@ -192,7 +191,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "linux101" {
 #Create Azure Container registry
 resource "azurerm_container_registry" "acr" {
   name                = "${local.full_acr_name}acr01"
-  resource_group_name = local.full_rg_name
+  resource_group_name = azurerm_resource_group.mhc.name
   location            = var.location
   sku                 = "Standard"
   admin_enabled       = true
