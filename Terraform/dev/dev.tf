@@ -214,7 +214,7 @@ resource "azurerm_public_ip" "MHCIP" {
   resource_group_name = azurerm_resource_group.mhc.name
   location            = var.location
   allocation_method   = Static
-  sku		      = Standard
+  sku		              = "Standard"
 
   tags = {
     environment = terraform.workspace
@@ -222,7 +222,7 @@ resource "azurerm_public_ip" "MHCIP" {
 }
 # Provide admin role to aks cluster admins
 resource "azurerm_role_assignment" "aks_cluster_admin_role" {
-  scope                = azurerm_kubernetes_cluster_aks_cluster.id
+  scope                = azurerm_kubernetes_cluster.aks_cluster.id
   role_definition_name = "Azure Kubernetes Service RBAC Cluster Admin"
   principal_id         = azuread_group.aks_administrators.object_id
 }
