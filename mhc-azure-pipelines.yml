@@ -199,7 +199,7 @@ stages:
               displayName: "Add nginx Helm Repo"
               inputs:
                 targetType: 'inline'
-                script: 'helm repo add stable https://kubernetes-charts.storage.googleapis.com/'
+                script: 'helm repo add stable https://charts.helm.sh/stable'
 
             - task: HelmDeploy@0
               displayName: Install Nginx
