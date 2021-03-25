@@ -246,6 +246,7 @@ stages:
                 azureResourceGroup: $(AzureResourceGroup)
                 kubernetesCluster: $(DevCluster)
                 namespace: 'ingress-basic'
+                useClusterAdmin: true
                 command: 'install'
                 chartType: 'Name'
                 chartName: 'jetstack/cert-manager'
