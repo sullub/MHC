@@ -228,6 +228,6 @@ resource "azurerm_role_assignment" "aks_cluster_admin_role" {
 }
 
 output "public_ip" {
-  value       = azurerm_public_ip.mhcp.ip_address
+  value       = azurerm_public_ip.mhcip.ip_address
   description = "Azure Public IP Address"
 }
