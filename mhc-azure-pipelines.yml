@@ -209,10 +209,11 @@ stages:
                 azureResourceGroup: $(AzureResourceGroup)
                 kubernetesCluster: $(DevCluster)
                 namespace: 'ingress-basic'
+                useClusterAdmin: true
                 command: 'install'
                 chartType: 'Name'
                 chartName: 'stable/nginx-ingress'
-                arguments: '--set controller.replicaCount=2 --set controller.service.loadBalancerIP="51.132.42.220" --set controller.nodeSelector."beta\.kubernetes\.io/os"=linux --set defaultBackend.nodeSelector."beta\.kubernetes\.io/os"=linux'
+                arguments: '--set controller.replicaCount=2 --set controller.service.loadBalancerIP="$(MHCPublicIPDev)" --set controller.nodeSelector."beta\.kubernetes\.io/os"=linux --set defaultBackend.nodeSelector."beta\.kubernetes\.io/os"=linux'
 
             - task: Kubernetes@1
               displayName: Create custom resources
