@@ -3,14 +3,14 @@
 trigger:
   branches:
       include:
-      - dev/*
+      - dev
       - qa
       - master
 
 stages:
 - stage: Dev
   displayName: Publish Terraform Manifests
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/dev')
   variables:
       - group: Terraform
   jobs:
