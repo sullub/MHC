@@ -208,4 +208,26 @@ resource "azurerm_role_assignment" "aks_cluster" {
   role_definition_name = "AcrPull"
   principal_id         = azurerm_kubernetes_cluster.aks_cluster.kubelet_identity[0].object_id
 }
+# Create Public IP address
+resource "azurerm_public_ip" "MHCIP" {
+  name                = "${local.full_rg_name}PubIp1"
+  resource_group_name = azurerm_resource_group.mhc.name
+  location            = var.location
+  allocation_method   = Static
+  sku		      = Standard
 
+  tags = {
+    environment = terraform.workspace
+  }
+}
+# Provide admin role to aks cluster admins
+resource "azurerm_role_assignment" "aks_cluster_admin_role" {
+  scope                = azurerm_kubernetes_cluster_aks_cluster.id
+  role_definition_name = "Azure Kubernetes Service RBAC Cluster Admin"
+  principal_id         = azuread_group.aks_administrators.object_id
+}
+
+output "public_ip" {
+  value       = "${azurerm_public_ip.MHCIP.name.ip_address}"
+  description = "Azure Public IP Address"
+}

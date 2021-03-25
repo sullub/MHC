@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-ssl
+  namespace: mhc-dev
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: letsencrypt    
+spec:
+  rules:
+  - host: dev.alin.world
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: mhc-front
+          servicePort: 80        
+  tls:
+  - hosts:
+    - dev.alin.world
+    secretName: dev.alinworld-secret       

@@ -1,3 +1,10 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: mhc-dev
+  annotations:
+    linkerd.io/inject: enabled
+---
 apiVersion: apps/v1
 
 kind: Deployment
@@ -5,6 +12,7 @@ kind: Deployment
 metadata:
 
   name: mhc-back
+  namespace: mhc-dev
   labels:
     app: mhc-back
 spec:
@@ -34,6 +42,8 @@ spec:
         - containerPort: 6379
 
           name: redis
+      nodeSelector:
+        app: "asp.net"    
 
 ---
 
@@ -44,7 +54,7 @@ kind: Service
 metadata:
 
   name: mhc-back
-
+  namespace: mhc-dev
 spec:
   type: ClusterIP
   ports:
@@ -64,7 +74,7 @@ kind: Deployment
 metadata:
 
   name: mhc-front
-
+  namespace: mhc-dev
 spec:
 
   replicas: 1
@@ -118,7 +128,8 @@ spec:
         - name: REDIS
 
           value: "mhc-back"
-
+      nodeSelector:
+        app: "asp.net"
 ---
 
 apiVersion: v1
@@ -128,10 +139,10 @@ kind: Service
 metadata:
 
   name: mhc-front
-
+  namespace: mhc-dev
 spec:
 
-  type: LoadBalancer
+  type: ClusterIP
 
   ports:
 
