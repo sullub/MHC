@@ -205,11 +205,11 @@ stages:
               displayName: Install Nginx
               inputs:
                 connectionType: 'Azure Resource Manager'
-                azureSubscriptionEndpoint: 'MHC_terraform Lab'
-                azureResourceGroup: $(AzureResourceGroup)
-                kubernetesCluster: $(DevCluster)
-                namespace: 'ingress-basic'
+                azureSubscription: 'MHC_terraform Lab'
+                azureResourceGroup: 'ask-dev-mhc-rg'
+                kubernetesCluster: 'ask-dev-mhc-rg-cluster01'
                 useClusterAdmin: true
+                namespace: 'ingress-basic'
                 command: 'install'
                 chartType: 'Name'
                 chartName: 'stable/nginx-ingress'
@@ -242,11 +242,11 @@ stages:
               displayName: Install cert-manager
               inputs:
                 connectionType: 'Azure Resource Manager'
-                azureSubscriptionEndpoint: 'MHC_terraform Lab'
-                azureResourceGroup: $(AzureResourceGroup)
-                kubernetesCluster: $(DevCluster)
-                namespace: 'ingress-basic'
+                azureSubscription: 'MHC_terraform Lab'
+                azureResourceGroup: 'ask-dev-mhc-rg'
+                kubernetesCluster: 'ask-dev-mhc-rg-cluster01'
                 useClusterAdmin: true
+                namespace: 'ingress-basic'
                 command: 'install'
                 chartType: 'Name'
                 chartName: 'jetstack/cert-manager'
