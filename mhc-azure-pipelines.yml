@@ -238,11 +238,8 @@ stages:
             - task: HelmDeploy@0
               displayName: Install cert-manager
               inputs:
-                connectionType: 'Azure Resource Manager'
-                azureSubscription: 'MHC_terraform Lab'
-                azureResourceGroup: 'ask-dev-mhc-rg'
-                kubernetesCluster: 'ask-dev-mhc-rg-cluster01'
-                useClusterAdmin: true
+                connectionType: 'Kubernetes Service Connection'
+                kubernetesServiceConnection: 'MHC_AKS'
                 namespace: 'ingress-basic'
                 command: 'install'
                 chartType: 'Name'
