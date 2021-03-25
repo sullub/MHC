@@ -213,7 +213,7 @@ resource "azurerm_public_ip" "MHCIP" {
   name                = "${local.full_rg_name}PubIp1"
   resource_group_name = azurerm_resource_group.mhc.name
   location            = var.location
-  allocation_method   = Static
+  allocation_method   = "Static"
   sku		              = "Standard"
 
   tags = {
