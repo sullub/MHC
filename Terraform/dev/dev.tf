@@ -209,7 +209,7 @@ resource "azurerm_role_assignment" "aks_cluster" {
   principal_id         = azurerm_kubernetes_cluster.aks_cluster.kubelet_identity[0].object_id
 }
 # Create Public IP address
-resource "azurerm_public_ip" "MHCIP" {
+resource "azurerm_public_ip" "mhcip" {
   name                = "${local.full_rg_name}PubIp1"
   resource_group_name = azurerm_resource_group.mhc.name
   location            = var.location
@@ -228,6 +228,6 @@ resource "azurerm_role_assignment" "aks_cluster_admin_role" {
 }
 
 output "public_ip" {
-  value       = "azurerm_public_ip.MHCIP.ip_address"
+  value       = azurerm_public_ip.mhcp.ip_address
   description = "Azure Public IP Address"
 }
