@@ -33,41 +33,41 @@ stages:
         runOnce:
          deploy:
           steps:
-          - task: DownloadSecureFile@1
-            displayName: Download SSH Key
-            name: sshkey
-            inputs:
-              secureFile: 'ask-akssshkey2.pub'
-          - script: |
-              # Exit when any command returns a failure status.
-              set -e
-              # Write terraform.tfvars.
-              echo 'resource_group_location = "'$(ResourceGroupLocation)'"' | tee terraform.tfvars
-              # Write backend.tfvars.
-              echo 'resource_group_name = "TFStateFile-rg"' | tee backend.tfvars
-              echo 'storage_account_name = "'$(StorageAccountName)'"' | tee -a backend.tfvars
-              echo 'container_name = "tfstatefiles"' | tee -a backend.tfvars
-              echo 'key = "dev-terraform.tfstate"' | tee -a backend.tfvars
-              # Initialize Terraform.
-              terraform init -input=false -backend-config="backend.tfvars"
-              echo "*********** Create or select workspace"
-              terraform workspace select "$(Env1)" || terraform workspace new "$(Env1)"
-              #Run terraform plan
-              terraform plan -var ssh_public_key=$(sshkey.secureFilePath) -out dev.tfplan
-              # Apply the Terraform plan.
-              terraform apply dev.tfplan
-              # Get the App Service name for the dev environment.
-              MHCPublicIPDev=$(terraform output public_ip)
-              # Write the MHCPublicIPDev variable to the pipeline.
-              echo "##vso[task.setvariable variable=MHCPublicIPDev;isOutput=true]$MHCPublicIPDev"
-            workingDirectory: '$(Pipeline.Workspace)/terraform-manifests'  
-            name: 'RunTerraform'
-            displayName: 'Run Terraform'
-            env:
-              ARM_CLIENT_ID: $(ARM_CLIENT_ID)
-              ARM_CLIENT_SECRET: $(ARM_CLIENT_SECRET)
-              ARM_TENANT_ID: $(ARM_TENANT_ID)
-              ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)  
+          # - task: DownloadSecureFile@1
+          #   displayName: Download SSH Key
+          #   name: sshkey
+          #   inputs:
+          #     secureFile: 'ask-akssshkey2.pub'
+          # - script: |
+          #     # Exit when any command returns a failure status.
+          #     set -e
+          #     # Write terraform.tfvars.
+          #     echo 'resource_group_location = "'$(ResourceGroupLocation)'"' | tee terraform.tfvars
+          #     # Write backend.tfvars.
+          #     echo 'resource_group_name = "TFStateFile-rg"' | tee backend.tfvars
+          #     echo 'storage_account_name = "'$(StorageAccountName)'"' | tee -a backend.tfvars
+          #     echo 'container_name = "tfstatefiles"' | tee -a backend.tfvars
+          #     echo 'key = "dev-terraform.tfstate"' | tee -a backend.tfvars
+          #     # Initialize Terraform.
+          #     terraform init -input=false -backend-config="backend.tfvars"
+          #     echo "*********** Create or select workspace"
+          #     terraform workspace select "$(Env1)" || terraform workspace new "$(Env1)"
+          #     #Run terraform plan
+          #     terraform plan -var ssh_public_key=$(sshkey.secureFilePath) -out dev.tfplan
+          #     # Apply the Terraform plan.
+          #     terraform apply dev.tfplan
+          #     # Get the App Service name for the dev environment.
+          #     MHCPublicIPDev=$(terraform output public_ip)
+          #     # Write the MHCPublicIPDev variable to the pipeline.
+          #     echo "##vso[task.setvariable variable=MHCPublicIPDev;isOutput=true]$MHCPublicIPDev"
+          #   workingDirectory: '$(Pipeline.Workspace)/terraform-manifests'  
+          #   name: 'RunTerraform'
+          #   displayName: 'Run Terraform'
+          #   env:
+          #     ARM_CLIENT_ID: $(ARM_CLIENT_ID)
+          #     ARM_CLIENT_SECRET: $(ARM_CLIENT_SECRET)
+          #     ARM_TENANT_ID: $(ARM_TENANT_ID)
+          #     ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)  
     - job: Build
       continueOnError: false
       dependsOn: Provision
