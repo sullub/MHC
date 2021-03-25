@@ -152,19 +152,19 @@ stages:
           steps:
           - download: current
             artifact: deploy
-          - task: SqlAzureDacpacDeployment@1
-            displayName: Execute Azure SQL DacpacTask
-            inputs:
-              azureSubscription: 'MHC_terraform Lab'
-              AuthenticationType: 'server'
-              ServerName: '$(SQLserver)'
-              DatabaseName: 'mhcdb'
-              SqlUsername: '$(SQLuser)'
-              SqlPassword: '$(SQLPassword)'
-              deployType: 'DacpacTask'
-              DeploymentAction: 'Publish'
-              DacpacFile: '$(Pipeline.Workspace)/deploy/myhealthclinic.dacpac'
-              IpDetectionMethod: 'AutoDetect'
+          # - task: SqlAzureDacpacDeployment@1
+          #   displayName: Execute Azure SQL DacpacTask
+          #   inputs:
+          #     azureSubscription: 'MHC_terraform Lab'
+          #     AuthenticationType: 'server'
+          #     ServerName: '$(SQLserver)'
+          #     DatabaseName: 'mhcdb'
+          #     SqlUsername: '$(SQLuser)'
+          #     SqlPassword: '$(SQLPassword)'
+          #     deployType: 'DacpacTask'
+          #     DeploymentAction: 'Publish'
+          #     DacpacFile: '$(Pipeline.Workspace)/deploy/myhealthclinic.dacpac'
+          #     IpDetectionMethod: 'AutoDetect'
     - deployment: DeployAppsToAKS
       displayName: 'DeployAppsToAKS'
       dependsOn: DeployDacPac
