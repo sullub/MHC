@@ -6,8 +6,6 @@ trigger:
       - dev/*
       - qa
       - master
-variables:
-  MHCPublicIPDev: "$[ dependencies.Provision.outputs['RunTerraform.MHCPublicIPDev'] ]"  
 
 stages:
 - stage: Dev
@@ -171,6 +169,8 @@ stages:
       displayName: 'DeployAppsToAKS'
       dependsOn: DeployDacPac
       variables:
+      - name: MHCPublicIPDev
+        value: $[ dependencies.Provision.outputs['RunTerraform.MHCPublicIPDev'] ]
       - group: Terraform
       pool:
         vmImage: 'ubuntu-16.04'
