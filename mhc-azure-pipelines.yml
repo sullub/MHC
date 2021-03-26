@@ -72,8 +72,10 @@ stages:
     - job: Build
       continueOnError: false
       dependsOn: Provision
+      variables:
+        MHCPublicIPDev: $[ dependencies.Provision.outputs['Provision.RunTerraform.MHCPublicIPDev'] ]
       steps:
-      - script:   echo '$(MHCPublicIPDev)' 
+      - script:   "echo $(MHCPublicIPDev)" 
       # - task: replacetokens@3
       #   displayName: 'Replace tokens in appsettings.json'
       #   inputs:
