@@ -169,8 +169,6 @@ stages:
       displayName: 'DeployAppsToAKS'
     #  dependsOn: DeployDacPac
       dependsOn: Build
-      variables:
-       MHCPublicIPDev: $[ dependencies.Provision.outputs['Provision.RunTerraform.MHCPublicIPDev'] ]
       pool:
         vmImage: 'ubuntu-16.04'
       environment: dev
