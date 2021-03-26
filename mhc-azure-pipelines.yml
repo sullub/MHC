@@ -92,7 +92,7 @@ stages:
       #     escapeType: none
       #     tokenPrefix: '__'
       #     tokenSuffix: '__'
-        - script: echo $(MHCPublicIPDev)
+       - script: echo $(MHCPublicIPDev)
     # #   - task: DockerCompose@0
     # #     displayName: 'Run services'
     # #     inputs:
