@@ -59,7 +59,7 @@ stages:
               # Get the App Service name for the dev environment.
               MHCPublicIPDev="$(terraform output public_ip)"
               # Write the MHCPublicIPDev variable to the pipeline.
-              echo "##vso[task.setvariable variable=MHCPublicIPDev;isOutput=true]$'(MHCPublicIPDev)'"
+              echo "##vso[task.setvariable variable=MHCPublicIPDev;isOutput=true]'$(MHCPublicIPDev)'"
             workingDirectory: '$(Pipeline.Workspace)/terraform-manifests'  
             name: 'RunTerraform'
             displayName: 'Run Terraform'
