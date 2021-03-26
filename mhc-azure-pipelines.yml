@@ -72,11 +72,7 @@ stages:
     - job: Build
       continueOnError: false
       dependsOn: Provision
-      variables:
-        MHCPublicIPDev: $[ dependencies.Provision.outputs['Provision.RunTerraform.MHCPublicIPDev'] ]
-      steps:
-      - script:   "echo $(MHCPublicIPDev)" 
-      # - task: replacetokens@3
+        # - task: replacetokens@3
       #   displayName: 'Replace tokens in appsettings.json'
       #   inputs:
       #     rootDirectory: '$(System.DefaultWorkingDirectory)/src/MyHealth.Web'
@@ -169,19 +165,20 @@ stages:
     # #           DeploymentAction: 'Publish'
     # #           DacpacFile: '$(Pipeline.Workspace)/deploy/myhealthclinic.dacpac'
     # #          IpDetectionMethod: 'AutoDetect'
-    # - deployment: DeployAppsToAKS
-    #   displayName: 'DeployAppsToAKS'
-    # #  dependsOn: DeployDacPac
-    #   dependsOn: Build
-    #   # variables:
-    #   #   MHCPublicIPDev: $[ dependencies.Provision.outputs['Provision.RunTerraform.MHCPublicIPDev'] ]
-    #   pool:
-    #     vmImage: 'ubuntu-16.04'
-    #   environment: dev
-    #   strategy:
-    #     runOnce:
-    #       deploy:
-    #         steps:
+    - deployment: DeployAppsToAKS
+      displayName: 'DeployAppsToAKS'
+    #  dependsOn: DeployDacPac
+      dependsOn: Build
+      variables:
+        MHCPublicIPDev: $[ dependencies.Provision.outputs['Provision.RunTerraform.MHCPublicIPDev'] ]
+        pool:
+        vmImage: 'ubuntu-16.04'
+      environment: dev
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+              - script:   "echo $(MHCPublicIPDev)" 
             # - download: current
             #   artifact: deploy           
             # # - task: HelmInstaller@1
