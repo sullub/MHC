@@ -73,9 +73,9 @@ stages:
       continueOnError: false
       dependsOn: Provision
       variables:
-       MHCPublicIPDev: $[ dependencies.Provision.outputs['Provision.RunTerraform.MHCPublicIPDev'] ]
-       steps:
-        
+        MHCPublicIPDev: $[ dependencies.Provision.outputs['Provision.RunTerraform.MHCPublicIPDev'] ]
+      steps:
+        - script: echo $(MHCPublicIPDev)
         # - task: replacetokens@3
       #   displayName: 'Replace tokens in appsettings.json'
       #   inputs:
@@ -92,7 +92,6 @@ stages:
       #     escapeType: none
       #     tokenPrefix: '__'
       #     tokenSuffix: '__'
-       - script: echo $(MHCPublicIPDev)
     # #   - task: DockerCompose@0
     # #     displayName: 'Run services'
     # #     inputs:
