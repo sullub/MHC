@@ -181,7 +181,7 @@ stages:
             steps:
             # - download: current
             #   artifact: deploy          
-            - script:   echo $(MHCPublicIPDev)  
+            - script:   echo $(RunTerraform.MHCPublicIPDev)  
             # # - task: HelmInstaller@1
             #   displayName: Install Helm
             #   inputs:
