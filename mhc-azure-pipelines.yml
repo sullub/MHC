@@ -127,18 +127,18 @@ stages:
     #       containerregistrytype: Azure Container Registry
     #       azureContainerRegistry: '$(ACR)'
     #       azureSubscriptionEndpoint: 'MHC_terraform Lab'
-    #   - task: CopyFiles@2
-    #     inputs:
-    #       Contents: |
-    #         **/Manifests/*
-    #         **/*.dacpac
-    #       TargetFolder: '$(Build.ArtifactStagingDirectory)'
-    #   - task: PublishBuildArtifacts@1
-    #     displayName: 'Publish Artifact'
-    #     inputs:
-    #       PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    #       ArtifactName: 'deploy'
-    #       publishLocation: 'Container'          
+      - task: CopyFiles@2
+        inputs:
+          Contents: |
+            **/Manifests/*
+            **/*.dacpac
+          TargetFolder: '$(Build.ArtifactStagingDirectory)'
+      - task: PublishBuildArtifacts@1
+        displayName: 'Publish Artifact'
+        inputs:
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+          ArtifactName: 'deploy'
+          publishLocation: 'Container'          
 
     # - deployment: DeployDacPac
     #   displayName: 'DeployDacPac'
