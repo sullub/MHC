@@ -168,6 +168,7 @@ stages:
     - deployment: DeployAppsToAKS
       displayName: 'DeployAppsToAKS'
     #  dependsOn: DeployDacPac
+      dependsOn: Build
       variables:
       - name: MHCPublicIPDev
         value: $[ dependencies.Provision.outputs['Provision.RunTerraform.MHCPublicIPDev'] ]
