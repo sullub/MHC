@@ -211,6 +211,7 @@ resource "azurerm_role_assignment" "aks_cluster" {
 
 data "azurerm_resource_group" "noderg" {
   name = "${local.full_rg_name}-nrg"
+  depends_on = [azurerm_kubernetes_cluster.aks_cluster]
 }
 # Create Public IP address
 resource "azurerm_public_ip" "mhcip" {
