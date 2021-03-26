@@ -179,10 +179,10 @@ stages:
         runOnce:
           deploy:
             steps:
-            - download: current
-              artifact: deploy          
+            # - download: current
+            #   artifact: deploy          
             - script:   echo $(MHCPublicIPDev)  
-            # - task: HelmInstaller@1
+            # # - task: HelmInstaller@1
             #   displayName: Install Helm
             #   inputs:
             #     helmVersionToInstall: 'latest'
