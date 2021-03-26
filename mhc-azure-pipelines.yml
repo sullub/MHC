@@ -128,18 +128,18 @@ stages:
     # #       containerregistrytype: Azure Container Registry
     # #       azureContainerRegistry: '$(ACR)'
     # #       azureSubscriptionEndpoint: 'MHC_terraform Lab'
-      - task: CopyFiles@2
-        inputs:
-          Contents: |
-            **/Manifests/*
-            **/*.dacpac
-          TargetFolder: '$(Build.ArtifactStagingDirectory)'
-      - task: PublishBuildArtifacts@1
-        displayName: 'Publish Artifact'
-        inputs:
-          PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-          ArtifactName: 'deploy'
-          publishLocation: 'Container'          
+      # - task: CopyFiles@2
+      #   inputs:
+      #     Contents: |
+      #       **/Manifests/*
+      #       **/*.dacpac
+      #     TargetFolder: '$(Build.ArtifactStagingDirectory)'
+      # - task: PublishBuildArtifacts@1
+      #   displayName: 'Publish Artifact'
+      #   inputs:
+      #     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      #     ArtifactName: 'deploy'
+      #     publishLocation: 'Container'          
 
     # # - deployment: DeployDacPac
     # #   displayName: 'DeployDacPac'
@@ -181,10 +181,11 @@ stages:
             steps:
             - download: current
               artifact: deploy          
-            - task: HelmInstaller@1
-              displayName: Install Helm
-              inputs:
-                helmVersionToInstall: 'latest'
+            - script:   echo $(MHCPublicIPDev)  
+            # - task: HelmInstaller@1
+            #   displayName: Install Helm
+            #   inputs:
+            #     helmVersionToInstall: 'latest'
 
             # - task: Kubernetes@1
             #   displayName: Create ingress namespace
@@ -197,25 +198,25 @@ stages:
             #     command: 'create'
             #     arguments: 'namespace ingress-basic'
 
-            - task: Bash@3
-              displayName: "Add nginx Helm Repo"
-              inputs:
-                targetType: 'inline'
-                script: 'helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx'
+            # - task: Bash@3
+            #   displayName: "Add nginx Helm Repo"
+            #   inputs:
+            #     targetType: 'inline'
+            #     script: 'helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx'
 
-            - task: HelmDeploy@0
-              displayName: Install Nginx
-              inputs:
-                connectionType: 'Azure Resource Manager'
-                azureSubscription: 'MHC_terraform Lab'
-                azureResourceGroup: $(AzureResourceGroup)
-                kubernetesCluster: $(DevCluster)
-                useClusterAdmin: true
-                namespace: 'ingress-basic'
-                command: 'install'
-                chartType: 'Name'
-                chartName: 'ingress-nginx/ingress-nginx'
-                arguments: '--set controller.replicaCount=2 --set controller.service.loadBalancerIP=$(MHCPublicIPDev) --set controller.nodeSelector."beta\.kubernetes\.io/os"=linux --set defaultBackend.nodeSelector."beta\.kubernetes\.io/os"=linux'
+            # - task: HelmDeploy@0
+            #   displayName: Install Nginx
+            #   inputs:
+            #     connectionType: 'Azure Resource Manager'
+            #     azureSubscription: 'MHC_terraform Lab'
+            #     azureResourceGroup: $(AzureResourceGroup)
+            #     kubernetesCluster: $(DevCluster)
+            #     useClusterAdmin: true
+            #     namespace: 'ingress-basic'
+            #     command: 'install'
+            #     chartType: 'Name'
+            #     chartName: 'ingress-nginx/ingress-nginx'
+            #     arguments: '--set controller.replicaCount=2 --set controller.service.loadBalancerIP=$(MHCPublicIPDev) --set controller.nodeSelector."beta\.kubernetes\.io/os"=linux --set defaultBackend.nodeSelector."beta\.kubernetes\.io/os"=linux'
 
     #         - task: Kubernetes@1
     #           displayName: Create custom resources
