@@ -69,26 +69,26 @@ stages:
               ARM_TENANT_ID: $(ARM_TENANT_ID)
               ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)  
           #- script:   echo $(RunTerraform.MHCPublicIPDev)
-    # - job: Build
-    #   continueOnError: false
-    #   dependsOn: Provision
-    #   steps:
-    #   - task: replacetokens@3
-    #     displayName: 'Replace tokens in appsettings.json'
-    #     inputs:
-    #       rootDirectory: '$(System.DefaultWorkingDirectory)/src/MyHealth.Web'
-    #       targetFiles: 'appsettings.json'
-    #       escapeType: none
-    #       tokenPrefix: '__'
-    #       tokenSuffix: '__'
-    #   - task: replacetokens@3
-    #     displayName: 'Replace tokens in mhc-aks.yaml'
-    #     inputs:
-    #       rootDirectory: '$(System.DefaultWorkingDirectory)/Manifests/'
-    #       targetFiles: 'mhc-aks.yaml'
-    #       escapeType: none
-    #       tokenPrefix: '__'
-    #       tokenSuffix: '__'
+    - job: Build
+      continueOnError: false
+      dependsOn: Provision
+      steps:
+      - task: replacetokens@3
+        displayName: 'Replace tokens in appsettings.json'
+        inputs:
+          rootDirectory: '$(System.DefaultWorkingDirectory)/src/MyHealth.Web'
+          targetFiles: 'appsettings.json'
+          escapeType: none
+          tokenPrefix: '__'
+          tokenSuffix: '__'
+      - task: replacetokens@3
+        displayName: 'Replace tokens in mhc-aks.yaml'
+        inputs:
+          rootDirectory: '$(System.DefaultWorkingDirectory)/Manifests/'
+          targetFiles: 'mhc-aks.yaml'
+          escapeType: none
+          tokenPrefix: '__'
+          tokenSuffix: '__'
 
     # #   - task: DockerCompose@0
     # #     displayName: 'Run services'
@@ -128,18 +128,18 @@ stages:
     # #       containerregistrytype: Azure Container Registry
     # #       azureContainerRegistry: '$(ACR)'
     # #       azureSubscriptionEndpoint: 'MHC_terraform Lab'
-    #   - task: CopyFiles@2
-    #     inputs:
-    #       Contents: |
-    #         **/Manifests/*
-    #         **/*.dacpac
-    #       TargetFolder: '$(Build.ArtifactStagingDirectory)'
-    #   - task: PublishBuildArtifacts@1
-    #     displayName: 'Publish Artifact'
-    #     inputs:
-    #       PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    #       ArtifactName: 'deploy'
-    #       publishLocation: 'Container'          
+      - task: CopyFiles@2
+        inputs:
+          Contents: |
+            **/Manifests/*
+            **/*.dacpac
+          TargetFolder: '$(Build.ArtifactStagingDirectory)'
+      - task: PublishBuildArtifacts@1
+        displayName: 'Publish Artifact'
+        inputs:
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+          ArtifactName: 'deploy'
+          publishLocation: 'Container'          
 
     # # - deployment: DeployDacPac
     # #   displayName: 'DeployDacPac'
