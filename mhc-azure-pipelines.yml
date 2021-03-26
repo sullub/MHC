@@ -3,14 +3,16 @@
 trigger:
   branches:
       include:
-      - dev
+      - dev/*
       - qa
       - master
+variables:
+  MHCPublicIPDev': '$[ dependencies.Provision.outputs['RunTerraform.MHCPublicIPDev'] ]'     
 
 stages:
 - stage: Dev
   displayName: Publish Terraform Manifests
-  condition: eq(variables['Build.SourceBranch'], 'refs/heads/dev')
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/dev/*')
   variables:
       - group: Terraform
   jobs:
@@ -38,36 +40,36 @@ stages:
             name: sshkey
             inputs:
               secureFile: 'ask-akssshkey2.pub'
-          # - script: |
-          #     # Exit when any command returns a failure status.
-          #     set -e
-          #     # Write terraform.tfvars.
-          #     echo 'resource_group_location = "'$(ResourceGroupLocation)'"' | tee terraform.tfvars
-          #     # Write backend.tfvars.
-          #     echo 'resource_group_name = "TFStateFile-rg"' | tee backend.tfvars
-          #     echo 'storage_account_name = "'$(StorageAccountName)'"' | tee -a backend.tfvars
-          #     echo 'container_name = "tfstatefiles"' | tee -a backend.tfvars
-          #     echo 'key = "dev-terraform.tfstate"' | tee -a backend.tfvars
-          #     # Initialize Terraform.
-          #     terraform init -input=false -backend-config="backend.tfvars"
-          #     echo "*********** Create or select workspace"
-          #     terraform workspace select "$(Env1)" || terraform workspace new "$(Env1)"
-          #     #Run terraform plan
-          #     terraform plan -var ssh_public_key=$(sshkey.secureFilePath) -out dev.tfplan
-          #     # Apply the Terraform plan.
-          #     terraform apply dev.tfplan
-          #     # Get the App Service name for the dev environment.
-          #     MHCPublicIPDev=$(terraform output public_ip)
-          #     # Write the MHCPublicIPDev variable to the pipeline.
-          #     echo "##vso[task.setvariable variable=MHCPublicIPDev;isOutput=true]$MHCPublicIPDev"
-          #   workingDirectory: '$(Pipeline.Workspace)/terraform-manifests'  
-          #   name: 'RunTerraform'
-          #   displayName: 'Run Terraform'
-          #   env:
-          #     ARM_CLIENT_ID: $(ARM_CLIENT_ID)
-          #     ARM_CLIENT_SECRET: $(ARM_CLIENT_SECRET)
-          #     ARM_TENANT_ID: $(ARM_TENANT_ID)
-          #     ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)  
+          - script: |
+              # Exit when any command returns a failure status.
+              set -e
+              # Write terraform.tfvars.
+              echo 'resource_group_location = "'$(ResourceGroupLocation)'"' | tee terraform.tfvars
+              # Write backend.tfvars.
+              echo 'resource_group_name = "TFStateFile-rg"' | tee backend.tfvars
+              echo 'storage_account_name = "'$(StorageAccountName)'"' | tee -a backend.tfvars
+              echo 'container_name = "tfstatefiles"' | tee -a backend.tfvars
+              echo 'key = "dev-terraform.tfstate"' | tee -a backend.tfvars
+              # Initialize Terraform.
+              terraform init -input=false -backend-config="backend.tfvars"
+              echo "*********** Create or select workspace"
+              terraform workspace select "$(Env1)" || terraform workspace new "$(Env1)"
+              #Run terraform plan
+              terraform plan -var ssh_public_key=$(sshkey.secureFilePath) -out dev.tfplan
+              # Apply the Terraform plan.
+              terraform apply dev.tfplan
+              # Get the App Service name for the dev environment.
+              MHCPublicIPDev=$(terraform output public_ip)
+              # Write the MHCPublicIPDev variable to the pipeline.
+              echo "##vso[task.setvariable variable=MHCPublicIPDev;isOutput=true]$MHCPublicIPDev"
+            workingDirectory: '$(Pipeline.Workspace)/terraform-manifests'  
+            name: 'RunTerraform'
+            displayName: 'Run Terraform'
+            env:
+              ARM_CLIENT_ID: $(ARM_CLIENT_ID)
+              ARM_CLIENT_SECRET: $(ARM_CLIENT_SECRET)
+              ARM_TENANT_ID: $(ARM_TENANT_ID)
+              ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)  
     - job: Build
       continueOnError: false
       dependsOn: Provision
@@ -152,19 +154,19 @@ stages:
           steps:
           - download: current
             artifact: deploy
-          # - task: SqlAzureDacpacDeployment@1
-          #   displayName: Execute Azure SQL DacpacTask
-          #   inputs:
-          #     azureSubscription: 'MHC_terraform Lab'
-          #     AuthenticationType: 'server'
-          #     ServerName: '$(SQLserver)'
-          #     DatabaseName: 'mhcdb'
-          #     SqlUsername: '$(SQLuser)'
-          #     SqlPassword: '$(SQLPassword)'
-          #     deployType: 'DacpacTask'
-          #     DeploymentAction: 'Publish'
-          #     DacpacFile: '$(Pipeline.Workspace)/deploy/myhealthclinic.dacpac'
-          #     IpDetectionMethod: 'AutoDetect'
+          - task: SqlAzureDacpacDeployment@1
+            displayName: Execute Azure SQL DacpacTask
+            inputs:
+              azureSubscription: 'MHC_terraform Lab'
+              AuthenticationType: 'server'
+              ServerName: '$(SQLserver)'
+              DatabaseName: 'mhcdb'
+              SqlUsername: '$(SQLuser)'
+              SqlPassword: '$(SQLPassword)'
+              deployType: 'DacpacTask'
+              DeploymentAction: 'Publish'
+              DacpacFile: '$(Pipeline.Workspace)/deploy/myhealthclinic.dacpac'
+              IpDetectionMethod: 'AutoDetect'
     - deployment: DeployAppsToAKS
       displayName: 'DeployAppsToAKS'
       dependsOn: DeployDacPac
@@ -206,14 +208,14 @@ stages:
               inputs:
                 connectionType: 'Azure Resource Manager'
                 azureSubscription: 'MHC_terraform Lab'
-                azureResourceGroup: 'ask-dev-mhc-rg'
-                kubernetesCluster: 'ask-dev-mhc-rg-cluster01'
+                azureResourceGroup: $(AzureResourceGroup)
+                kubernetesCluster: $(DevCluster)
                 useClusterAdmin: true
                 namespace: 'ingress-basic'
                 command: 'install'
                 chartType: 'Name'
                 chartName: 'ingress-nginx/ingress-nginx'
-                arguments: '--set controller.replicaCount=2 --set controller.service.loadBalancerIP="51.132.42.220" --set controller.nodeSelector."beta\.kubernetes\.io/os"=linux --set defaultBackend.nodeSelector."beta\.kubernetes\.io/os"=linux'
+                arguments: '--set controller.replicaCount=2 --set controller.service.loadBalancerIP="$(MHCPublicIPDev)" --set controller.nodeSelector."beta\.kubernetes\.io/os"=linux --set defaultBackend.nodeSelector."beta\.kubernetes\.io/os"=linux'
 
             - task: Kubernetes@1
               displayName: Create custom resources
@@ -243,8 +245,8 @@ stages:
               inputs:
                 connectionType: 'Azure Resource Manager'
                 azureSubscription: 'MHC_terraform Lab'
-                azureResourceGroup: 'ask-dev-mhc-rg'
-                kubernetesCluster: 'ask-dev-mhc-rg-cluster01'
+                azureResourceGroup: $(AzureResourceGroup)
+                kubernetesCluster: $(DevCluster)
                 useClusterAdmin: true
                 namespace: 'ingress-basic'
                 command: 'install'

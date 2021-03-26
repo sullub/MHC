@@ -208,10 +208,14 @@ resource "azurerm_role_assignment" "aks_cluster" {
   role_definition_name = "AcrPull"
   principal_id         = azurerm_kubernetes_cluster.aks_cluster.kubelet_identity[0].object_id
 }
+
+data "azurerm_resource_group" "noderg" {
+  name = ""${local.full_rg_name}-nrg""
+}
 # Create Public IP address
 resource "azurerm_public_ip" "mhcip" {
   name                = "${local.full_rg_name}PubIp1"
-  resource_group_name = azurerm_resource_group.mhc.name
+  resource_group_name = "${data.azurerm_resource_group.noderg.name}"
   location            = var.location
   allocation_method   = "Static"
   sku		              = "Standard"
@@ -219,6 +223,7 @@ resource "azurerm_public_ip" "mhcip" {
   tags = {
     environment = terraform.workspace
   }
+  depends_on = [azurerm_kubernetes_cluster.aks_cluster]
 }
 # Provide admin role to aks cluster admins
 resource "azurerm_role_assignment" "aks_cluster_admin_role" {
