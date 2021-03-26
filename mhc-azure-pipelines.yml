@@ -214,7 +214,7 @@ stages:
                 command: 'install'
                 chartType: 'Name'
                 chartName: 'ingress-nginx/ingress-nginx'
-                arguments: '--set controller.replicaCount=2 --set controller.service.loadBalancerIP="$(MHCPublicIPDev)" --set controller.nodeSelector."beta\.kubernetes\.io/os"=linux --set defaultBackend.nodeSelector."beta\.kubernetes\.io/os"=linux'
+                arguments: '--set controller.replicaCount=2 --set controller.service.loadBalancerIP=$(MHCPublicIPDev) --set controller.nodeSelector."beta\.kubernetes\.io/os"=linux --set defaultBackend.nodeSelector."beta\.kubernetes\.io/os"=linux'
 
             - task: Kubernetes@1
               displayName: Create custom resources
