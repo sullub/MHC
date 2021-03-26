@@ -7,7 +7,7 @@ trigger:
       - qa
       - master
 variables:
-  MHCPublicIPDev': '$[ dependencies.Provision.outputs['RunTerraform.MHCPublicIPDev'] ]'     
+  MHCPublicIPDev': $[ dependencies.Provision.outputs['RunTerraform.MHCPublicIPDev'] ]  
 
 stages:
 - stage: Dev
