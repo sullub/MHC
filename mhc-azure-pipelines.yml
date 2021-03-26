@@ -167,7 +167,7 @@ stages:
     #          IpDetectionMethod: 'AutoDetect'
     - deployment: DeployAppsToAKS
       displayName: 'DeployAppsToAKS'
-      dependsOn: DeployDacPac
+    #  dependsOn: DeployDacPac
       variables:
       - name: MHCPublicIPDev
         value: $[ dependencies.Provision.outputs['Provision.RunTerraform.MHCPublicIPDev'] ]
