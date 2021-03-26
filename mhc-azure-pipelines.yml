@@ -73,7 +73,7 @@ stages:
       continueOnError: false
       dependsOn: Provision
       steps:
-      - script:   echo $(MHCPublicIPDev) 
+      - script:   echo '$(MHCPublicIPDev)' 
       # - task: replacetokens@3
       #   displayName: 'Replace tokens in appsettings.json'
       #   inputs:
