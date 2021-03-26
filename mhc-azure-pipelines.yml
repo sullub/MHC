@@ -178,7 +178,7 @@ stages:
         runOnce:
           deploy:
             steps:
-              - script:   echo '$(MHCPublicIPDev)'
+              - script:   "echo '$(MHCPublicIPDev)'"
             # - download: current
             #   artifact: deploy           
             # # - task: HelmInstaller@1
