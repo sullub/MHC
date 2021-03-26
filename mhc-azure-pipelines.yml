@@ -170,9 +170,7 @@ stages:
     #  dependsOn: DeployDacPac
       dependsOn: Build
       variables:
-      - name: MHCPublicIPDev
-        value: $[ dependencies.Provision.outputs['Provision.RunTerraform.MHCPublicIPDev'] ]
-      - group: Terraform
+       MHCPublicIPDev: $[ dependencies.Provision.outputs['Provision.RunTerraform.MHCPublicIPDev'] ]
       pool:
         vmImage: 'ubuntu-16.04'
       environment: dev
