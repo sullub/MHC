@@ -12,8 +12,6 @@ stages:
   displayName: Publish Terraform Manifests
   condition: eq(variables['Build.SourceBranch'], 'refs/heads/dev')
   variables:
-  - name: MHCPublicIPDev
-    value: $[ dependencies.Provision.outputs['Provision.RunTerraform.MHCPublicIPDev'] ]
   - group: Terraform
   jobs:
     - job: Publish
@@ -25,16 +23,12 @@ stages:
           targetPath: '$(System.DefaultWorkingDirectory)/Terraform/dev'
           artifact: 'terraform-manifests'
           publishLocation: 'pipeline'
-    - deployment: Provision
+    - job: Provision
       displayName: 'Provision MHC AKS Dev Infrastructure Environment'
       dependsOn: Publish
       pool:
         vmImage: 'ubuntu-16.04'
-      environment: dev
-      strategy:
-        runOnce:
-         deploy:
-          steps:
+      steps:
           - task: DownloadSecureFile@1
             displayName: Download SSH Key
             name: sshkey
@@ -174,6 +168,8 @@ stages:
       displayName: 'DeployAppsToAKS'
     #  dependsOn: DeployDacPac
       dependsOn: Build
+      variables:
+        MHCPublicIPDev: $[ dependencies.Provision.outputs['Provision.RunTerraform.MHCPublicIPDev'] ]
       pool:
        vmImage: 'ubuntu-16.04'
       environment: dev
