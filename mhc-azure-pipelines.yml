@@ -38,7 +38,7 @@ stages:
             inputs:
               buildType: 'current'
               artifactName: 'terraform-manifests'
-              targetPath: '$(Pipeline.Workspace)'
+              targetPath: '$(Pipeline.Workspace)/terraform-manifests'
           - script: |
               # Exit when any command returns a failure status.
               set -e
