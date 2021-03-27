@@ -6,14 +6,15 @@ trigger:
       - dev
       - qa
       - master
-variables:
-  MHCPublicIPDev: $[ dependencies.Provision.outputs['Provision.RunTerraform.MHCPublicIPDev'] ]
+
 stages:
 - stage: Dev
   displayName: Publish Terraform Manifests
   condition: eq(variables['Build.SourceBranch'], 'refs/heads/dev')
   variables:
-      - group: Terraform
+  - name: MHCPublicIPDev
+    value: $[ dependencies.Provision.outputs['Provision.RunTerraform.MHCPublicIPDev'] ]
+  - group: Terraform
   jobs:
     - job: Publish
       continueOnError: false
