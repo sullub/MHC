@@ -6,7 +6,8 @@ trigger:
       - dev
       - qa
       - master
-
+variables:
+  MHCPublicIPDev: $[ dependencies.Provision.outputs['Provision.RunTerraform.MHCPublicIPDev'] ]
 stages:
 - stage: Dev
   displayName: Publish Terraform Manifests
@@ -172,11 +173,9 @@ stages:
       displayName: 'DeployAppsToAKS'
     #  dependsOn: DeployDacPac
       dependsOn: Build
-      variables:
-        MHCPublicIPDev: $[ dependencies.Provision.outputs['Provision.RunTerraform.MHCPublicIPDev'] ]
       pool:
        vmImage: 'ubuntu-16.04'
-      environment: dev
+      #environment: dev
       strategy:
         runOnce:
           deploy:
