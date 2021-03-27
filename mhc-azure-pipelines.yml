@@ -74,7 +74,7 @@ stages:
       continueOnError: false
       dependsOn: Provision
       variables:
-        MHCPublicIPDev: $[ dependencies.Provision.outputs['Provision.RunTerraform.MHCPublicIPDev'] ]
+        MHCPublicIPDev: $[ dependencies.Provision.outputs['RunTerraform.MHCPublicIPDev'] ]
       steps:
         - script: echo $(MHCPublicIPDev)
         # - task: replacetokens@3
@@ -174,7 +174,7 @@ stages:
     #  dependsOn: DeployDacPac
       dependsOn: Build
       variables:
-        MHCPublicIPDev: $[ dependencies.Provision.outputs['Provision.RunTerraform.MHCPublicIPDev'] ]
+        MHCPublicIPDev: $[ dependencies.Provision.outputs['RunTerraform.MHCPublicIPDev'] ]
       pool:
        vmImage: 'ubuntu-16.04'
       environment: dev
